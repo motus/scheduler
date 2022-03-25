@@ -28,7 +28,6 @@ func bestPrice(nodes []Node, pod *Pod) (Node, error) {
 	}
 	fmt.Printf("Processing pod with string color: %s\n", podColor)
 	podColorParsed, _ := colors.ParseHEX(podColor)
-	fmt.Printf("hex ok: %s\n", podColorParsed.String())
 
 	for _, n := range nodes {
 		nodeColor, ok := n.Metadata.Annotations["hightower.com/color"]

@@ -12,6 +12,7 @@ import (
 )
 
 var listOnly bool
+var podsOnly bool
 
 type NodeList struct {
 	Items []Node `json:"items"`
@@ -28,11 +29,20 @@ type Metadata struct {
 
 func main() {
 	flag.BoolVar(&listOnly, "l", false, "List current annotations and exist")
+	flag.BoolVar(&podsOnly, "p", false, "Annotate pods")
 	flag.Parse()
 
-	colors := []string{"#ffffff", "#000000"}
-	//colors := []string{"#ffffff", "#000000", "#00ff00", "#333333", "#aaaaaa", "#927a0c"}
-	resp, err := http.Get("http://127.0.0.1:8001/api/v1/nodes")
+	colors := []string{""}
+	url := ""
+	if podsOnly {
+		colors = []string{"#feffef", "#604010", "#00ff00", "#333333", "#aaaaaa", "#927a0c"}
+		url = "http://127.0.0.1:8001/api/v1/namespaces/colors/pods"
+	} else {
+		colors = []string{"#ffffff", "#000000"}
+		url = "http://127.0.0.1:8001/api/v1/nodes"
+	}
+
+	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -45,6 +55,7 @@ func main() {
 	var nodes NodeList
 	decoder := json.NewDecoder(resp.Body)
 	err = decoder.Decode(&nodes)
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -74,16 +85,19 @@ func main() {
 		body := bytes.NewBuffer(b)
 		err := json.NewEncoder(body).Encode(patch)
 		if err != nil {
+			fmt.Println("failed encode patch")
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		url := "http://127.0.0.1:8001/api/v1/nodes/" + node.Metadata.Name
-		request, err := http.NewRequest("PATCH", url, body)
+		urlfull := url + "/" + node.Metadata.Name
+		request, err := http.NewRequest("PATCH", urlfull, body)
 		if err != nil {
+			fmt.Println("failed patch request")
 			fmt.Println(err)
 			os.Exit(1)
 		}
+
 		request.Header.Set("Content-Type", "application/strategic-merge-patch+json")
 		request.Header.Set("Accept", "application/json, */*")
 
@@ -92,8 +106,8 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-
 		if resp.StatusCode != 200 {
+			fmt.Println("%s", resp)
 			fmt.Println(err)
 			os.Exit(1)
 		}
