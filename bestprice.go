@@ -16,16 +16,19 @@ package main
 import (
 	"errors"
 	"fmt"
+
 	"gopkg.in/go-playground/colors.v1"
 )
 
 func bestPrice(nodes []Node, pod *Pod) (Node, error) {
 
-	podColor := pod.Metadata.Annotations["hightower.com/color"]
+	podColor, ok := pod.Metadata.Annotations["hightower.com/color"]
+	if !ok {
+		return Node{}, errors.New("couldn't get annotation from pod")
+	}
 	fmt.Printf("Processing pod with string color: %s\n", podColor)
 	podColorParsed, _ := colors.ParseHEX(podColor)
 	fmt.Printf("hex ok: %s\n", podColorParsed.String())
-
 
 	for _, n := range nodes {
 		nodeColor, ok := n.Metadata.Annotations["hightower.com/color"]
@@ -33,7 +36,7 @@ func bestPrice(nodes []Node, pod *Pod) (Node, error) {
 			return Node{}, errors.New("couldn't get annotation from node")
 		}
 		nodeColorParsed, _ := colors.ParseHEX(nodeColor)
-		if  nodeColorParsed.IsLight() == podColorParsed.IsLight() {
+		if nodeColorParsed.IsLight() == podColorParsed.IsLight() {
 			fmt.Printf("Match found\n")
 			return n, nil
 		}
