@@ -14,37 +14,31 @@
 package main
 
 import (
-	"strconv"
+	"errors"
+	"fmt"
+	"gopkg.in/go-playground/colors.v1"
 )
 
-func bestPrice(nodes []Node) (Node, error) {
-	type NodePrice struct {
-		Node  Node
-		Price float64
-	}
+func bestPrice(nodes []Node, pod *Pod) (Node, error) {
 
-	var bestNodePrice *NodePrice
+	podColor := pod.Metadata.Annotations["hightower.com/color"]
+	fmt.Printf("Processing pod with string color: %s\n", podColor)
+	podColorParsed, _ := colors.ParseHEX(podColor)
+	fmt.Printf("hex ok: %s\n", podColorParsed.String())
+
+
 	for _, n := range nodes {
-		price, ok := n.Metadata.Annotations["hightower.com/cost"]
+		nodeColor, ok := n.Metadata.Annotations["hightower.com/color"]
 		if !ok {
-			continue
+			return Node{}, errors.New("couldn't get annotation from node")
 		}
-		f, err := strconv.ParseFloat(price, 32)
-		if err != nil {
-			return Node{}, err
-		}
-		if bestNodePrice == nil {
-			bestNodePrice = &NodePrice{n, f}
-			continue
-		}
-		if f < bestNodePrice.Price {
-			bestNodePrice.Node = n
-			bestNodePrice.Price = f
+		nodeColorParsed, _ := colors.ParseHEX(nodeColor)
+		if  nodeColorParsed.IsLight() == podColorParsed.IsLight() {
+			fmt.Printf("Match found\n")
+			return n, nil
 		}
 	}
 
-	if bestNodePrice == nil {
-		bestNodePrice = &NodePrice{nodes[0], 0}
-	}
-	return bestNodePrice.Node, nil
+	fmt.Printf("WARNING: Could not find a color-matching node, defaulting to first node\n")
+	return nodes[0], nil
 }

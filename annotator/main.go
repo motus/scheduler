@@ -30,7 +30,8 @@ func main() {
 	flag.BoolVar(&listOnly, "l", false, "List current annotations and exist")
 	flag.Parse()
 
-	prices := []string{"0.05", "0.10", "0.20", "0.40", "0.80", "1.60"}
+	colors := []string{"#ffffff", "#000000"}
+	//colors := []string{"#ffffff", "#000000", "#00ff00", "#333333", "#aaaaaa", "#927a0c"}
 	resp, err := http.Get("http://127.0.0.1:8001/api/v1/nodes")
 	if err != nil {
 		fmt.Println(err)
@@ -51,17 +52,17 @@ func main() {
 
 	if listOnly {
 		for _, node := range nodes.Items {
-			price := node.Metadata.Annotations["hightower.com/cost"]
-			fmt.Printf("%s %s\n", node.Metadata.Name, price)
+			color := node.Metadata.Annotations["hightower.com/color"]
+			fmt.Printf("%s %s\n", node.Metadata.Name, color)
 		}
 		os.Exit(0)
 	}
 
 	rand.Seed(time.Now().Unix())
 	for _, node := range nodes.Items {
-		price := prices[rand.Intn(len(prices))]
+		color := colors[rand.Intn(len(colors))]
 		annotations := map[string]string{
-			"hightower.com/cost": price,
+			"hightower.com/color": color,
 		}
 		patch := Node{
 			Metadata{
@@ -96,6 +97,6 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Printf("%s %s\n", node.Metadata.Name, price)
+		fmt.Printf("%s %s\n", node.Metadata.Name, color)
 	}
 }
