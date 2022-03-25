@@ -107,7 +107,7 @@ func main() {
 			os.Exit(1)
 		}
 		if resp.StatusCode != 200 {
-			fmt.Println("%s", resp)
+			fmt.Println(resp)
 			fmt.Println(err)
 			os.Exit(1)
 		}
