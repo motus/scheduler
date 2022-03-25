@@ -16,6 +16,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 
 	"gopkg.in/go-playground/colors.v1"
 )
@@ -29,6 +30,11 @@ func bestPrice(nodes []Node, pod *Pod) (Node, error) {
 	fmt.Printf("Processing pod with string color: %s\n", podColor)
 	podColorParsed, _ := colors.ParseHEX(podColor)
 
+	// put nodes in random order, as they are currently assigned on first color match.
+	// TODO: sort them by CPU availablity
+	rand.Shuffle(len(nodes), func(i, j int) {
+		nodes[i], nodes[j] = nodes[j], nodes[i]
+	})
 	for _, n := range nodes {
 		nodeColor, ok := n.Metadata.Annotations["hightower.com/color"]
 		if !ok {
