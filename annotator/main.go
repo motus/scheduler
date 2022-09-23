@@ -32,13 +32,13 @@ func main() {
 	flag.BoolVar(&podsOnly, "p", false, "Annotate pods")
 	flag.Parse()
 
-	colors := []string{""}
+	embeddings := []string{""}
 	url := ""
 	if podsOnly {
-		colors = []string{"#feffef", "#604010", "#00ff00", "#333333", "#aaaaaa", "#927a0c"}
-		url = "http://127.0.0.1:8011/api/v1/namespaces/colors/pods"
+		embeddings = []string{"#feffef", "#604010", "#00ff00", "#333333", "#aaaaaa", "#927a0c"}
+		url = "http://127.0.0.1:8011/api/v1/namespaces/embeddings/pods"
 	} else {
-		colors = []string{"#ffffff", "#000000"}
+		embeddings = []string{"#ffffff", "#000000"}
 		url = "http://127.0.0.1:8011/api/v1/nodes"
 	}
 
@@ -63,17 +63,17 @@ func main() {
 
 	if listOnly {
 		for _, node := range nodes.Items {
-			color := node.Metadata.Annotations["hightower.com/color"]
-			fmt.Printf("%s %s\n", node.Metadata.Name, color)
+			embedding := node.Metadata.Annotations["hightower.com/embedding"]
+			fmt.Printf("%s %s\n", node.Metadata.Name, embedding)
 		}
 		os.Exit(0)
 	}
 
 	rand.Seed(time.Now().Unix())
 	for _, node := range nodes.Items {
-		color := colors[rand.Intn(len(colors))]
+		embedding := embeddings[rand.Intn(len(embeddings))]
 		annotations := map[string]string{
-			"hightower.com/color": color,
+			"hightower.com/embedding": embedding,
 		}
 		patch := Node{
 			Metadata{
@@ -111,6 +111,6 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Printf("%s %s\n", node.Metadata.Name, color)
+		fmt.Printf("%s %s\n", node.Metadata.Name, embedding)
 	}
 }

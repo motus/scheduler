@@ -14,7 +14,7 @@ output:
 Starting to serve on 127.0.0.1:8011
 ```
 
-### Annotate all the nodes with randomly assigned colors
+### Annotate all the nodes with randomly assigned embeddings
 ```
 go run annotator/main.go
 ```
@@ -29,8 +29,8 @@ aks-agentpool-25166730-vmss000003 #ffffff
 ### Create a deployment
 
 ```
-kubectl create namespace colors
-kubectl apply -f deployments/nginx.yaml --namespace=colors
+kubectl create namespace embeddings
+kubectl apply -f deployments/nginx.yaml --namespace=embeddings
 ```
 ```
 deployment.apps/nginx created
@@ -39,7 +39,7 @@ deployment.apps/nginx created
 The nginx pod(s) should be in a pending state:
 
 ```
-kubectl get pods -n colors
+kubectl get pods -n embeddings
 ```
 output:
 ```
@@ -54,7 +54,7 @@ sh ./build
 
 ## Run the Scheduler
 
-As a reminder, list the nodes and note the randomly assigned color of each node.
+As a reminder, list the nodes and note the randomly assigned embedding of each node.
 
 ```
 go run annotator/main.go -l
@@ -67,7 +67,7 @@ aks-agentpool-25166730-vmss000002 #000000
 aks-agentpool-25166730-vmss000003 #ffffff
 ```
 
-Now, randomly assign colors to the pods that are pending:
+Now, randomly assign embeddings to the pods that are pending:
 ```
 go run annotator/main.go -p
 ```
@@ -79,7 +79,7 @@ nginx-d957c978b-r6488 #604010
 ```
 
 
-Now, run the color sort scheduler:
+Now, run the embedding sort scheduler:
 
 ```
 ./scheduler
@@ -88,13 +88,13 @@ Now, run the color sort scheduler:
 output
 ```
 2022/03/25 04:30:50 Starting custom scheduler...
-Processing pod with string color: #927a0c
+Processing pod with string embedding: #927a0c
 Match found
 2022/03/25 04:30:52 Successfully assigned nginx-d957c978b-d2bsn to aks-agentpool-25166730-vmss000000
-Processing pod with string color: #00ff00
+Processing pod with string embedding: #00ff00
 Match found
 2022/03/25 04:30:54 Successfully assigned nginx-d957c978b-nrddx to aks-agentpool-25166730-vmss000001
-Processing pod with string color: #aaaaaa
+Processing pod with string embedding: #aaaaaa
 Match found
 2022/03/25 04:30:56 Successfully assigned nginx-d957c978b-sqdsq to aks-agentpool-25166730-vmss000001
 ```
@@ -102,13 +102,13 @@ Hit control C.
 
 See the scheduled pods:
 ```
-kubectl get pods -owide --sort-by="{.spec.nodeName}" -n colors
+kubectl get pods -owide --sort-by="{.spec.nodeName}" -n embeddings
 ```
 
 
 Now, tear it down for the next run!
 ```
-kubectl delete -f deployments/nginx.yaml --namespace colors
+kubectl delete -f deployments/nginx.yaml --namespace embeddings
 ```
 
 
