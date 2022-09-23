@@ -28,7 +28,7 @@ import (
 )
 
 var (
-	apiHost           = "127.0.0.1:8001"
+	apiHost           = "127.0.0.1:8011"
 	bindingsEndpoint  = "/api/v1/namespaces/default/pods/%s/binding/"
 	eventsEndpoint    = "/api/v1/namespaces/default/events"
 	nodesEndpoint     = "/api/v1/nodes"

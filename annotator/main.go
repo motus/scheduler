@@ -31,7 +31,7 @@ func main() {
 	flag.Parse()
 
 	prices := []string{"0.05", "0.10", "0.20", "0.40", "0.80", "1.60"}
-	resp, err := http.Get("http://127.0.0.1:8001/api/v1/nodes")
+	resp, err := http.Get("http://127.0.0.1:8011/api/v1/nodes")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -77,7 +77,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		url := "http://127.0.0.1:8001/api/v1/nodes/" + node.Metadata.Name
+		url := "http://127.0.0.1:8011/api/v1/nodes/" + node.Metadata.Name
 		request, err := http.NewRequest("PATCH", url, body)
 		if err != nil {
 			fmt.Println(err)
