@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"gopkg.in/go-playground/embeddings.v1"
+	"gopkg.in/go-playground/colors.v1"
 )
 
 func bestPrice(nodes []Node, pod *Pod) (Node, error) {
@@ -28,7 +28,7 @@ func bestPrice(nodes []Node, pod *Pod) (Node, error) {
 		return Node{}, errors.New("couldn't get annotation from pod")
 	}
 	fmt.Printf("Processing pod with string embedding: %s\n", podEmbedding)
-	podEmbeddingParsed, _ := embeddings.ParseHEX(podEmbedding)
+	podEmbeddingParsed, _ := colors.ParseHEX(podEmbedding)
 
 	// put nodes in random order, as they are currently assigned on first embedding match.
 	// TODO: sort them by CPU availablity
@@ -40,7 +40,7 @@ func bestPrice(nodes []Node, pod *Pod) (Node, error) {
 		if !ok {
 			return Node{}, errors.New("couldn't get annotation from node")
 		}
-		nodeEmbeddingParsed, _ := embeddings.ParseHEX(nodeEmbedding)
+		nodeEmbeddingParsed, _ := colors.ParseHEX(nodeEmbedding)
 		if nodeEmbeddingParsed.IsLight() == podEmbeddingParsed.IsLight() {
 			fmt.Printf("Match found\n")
 			return n, nil
