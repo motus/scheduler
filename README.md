@@ -7,10 +7,10 @@ Toy scheduler for use in Kubernetes demos.
 Annotate each node using the annotator command:
 
 ```
-kubectl proxy
+kubectl proxy --port=8011
 ```
 ```
-Starting to serve on 127.0.0.1:8001
+Starting to serve on 127.0.0.1:8011
 ```
 
 ```
