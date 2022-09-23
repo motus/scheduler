@@ -1,3 +1,5 @@
 /m
 /go.mod
 *.exe
+scheduler
+*.swp

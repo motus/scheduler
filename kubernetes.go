@@ -29,10 +29,10 @@ import (
 
 var (
 	apiHost           = "127.0.0.1:8011"
-	bindingsEndpoint  = "/api/v1/namespaces/default/pods/%s/binding/"
+	bindingsEndpoint  = "/api/v1/namespaces/colors/pods/%s/binding/"
 	eventsEndpoint    = "/api/v1/namespaces/default/events"
 	nodesEndpoint     = "/api/v1/nodes"
-	podsEndpoint      = "/api/v1/pods"
+	podsEndpoint      = "/api/v1/namespaces/colors/pods"
 	watchPodsEndpoint = "/api/v1/watch/pods"
 )
 
