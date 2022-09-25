@@ -14,6 +14,8 @@
 package main
 
 import (
+	"errors"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -29,4 +31,16 @@ func parseEmbedding(embeddingCsv string) ([]float32, error) {
 		embedding[i] = float32(val)
 	}
 	return embedding, nil
+}
+
+func euclideanDistance(vec1 []float32, vec2 []float32) (float32, error) {
+	if len(vec1) != len(vec2) {
+		return 0, errors.New("Vectors differ in length")
+	}
+	sumSq := 0.0
+	for i, v1 := range vec1 {
+		val := v1 - vec2[i]
+		sumSq += float64(val * val)
+	}
+	return float32(math.Sqrt(sumSq)), nil
 }

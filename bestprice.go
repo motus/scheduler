@@ -16,37 +16,46 @@ package main
 import (
 	"errors"
 	"fmt"
-	"math/rand"
-
-	"gopkg.in/go-playground/colors.v1"
+	"math"
 )
 
 func bestPrice(nodes []Node, pod *Pod) (Node, error) {
 
-	podEmbedding, ok := pod.Metadata.Annotations["hightower.com/embedding"]
+	podEmbeddingStr, ok := pod.Metadata.Annotations["hightower.com/embedding"]
 	if !ok {
 		return Node{}, errors.New("couldn't get annotation from pod")
 	}
-	fmt.Printf("Processing pod with string embedding: %s\n", podEmbedding)
-	podEmbeddingParsed, _ := colors.ParseHEX(podEmbedding)
 
-	// put nodes in random order, as they are currently assigned on first embedding match.
-	// TODO: sort them by CPU availablity
-	rand.Shuffle(len(nodes), func(i, j int) {
-		nodes[i], nodes[j] = nodes[j], nodes[i]
-	})
+	fmt.Printf("Processing pod with embedding string: %s\n", podEmbeddingStr)
+	podEmbedding, error := parseEmbedding(podEmbeddingStr)
+	if error != nil {
+		return Node{}, error
+	}
+
+	bestNode := nodes[0]
+	bestDistance := float32(math.Inf(1))
 	for _, n := range nodes {
-		nodeEmbedding, ok := n.Metadata.Annotations["hightower.com/embedding"]
+
+		nodeEmbeddingStr, ok := n.Metadata.Annotations["hightower.com/embedding"]
 		if !ok {
 			return Node{}, errors.New("couldn't get annotation from node")
 		}
-		nodeEmbeddingParsed, _ := colors.ParseHEX(nodeEmbedding)
-		if nodeEmbeddingParsed.IsLight() == podEmbeddingParsed.IsLight() {
-			fmt.Printf("Match found\n")
-			return n, nil
+
+		nodeEmbedding, error := parseEmbedding(nodeEmbeddingStr)
+		if error != nil {
+			return Node{}, error
+		}
+
+		dist, error := euclideanDistance(podEmbedding, nodeEmbedding)
+		if error != nil {
+			return Node{}, error
+		}
+
+		if dist <= bestDistance {
+			bestDistance = dist
+			bestNode = n
 		}
 	}
 
-	fmt.Printf("WARNING: Could not find a embedding-matching node, defaulting to first node\n")
-	return nodes[0], nil
+	return bestNode, nil
 }
