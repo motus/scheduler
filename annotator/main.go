@@ -28,18 +28,28 @@ type Metadata struct {
 }
 
 func main() {
+
 	flag.BoolVar(&listOnly, "l", false, "List current annotations and exist")
 	flag.BoolVar(&podsOnly, "p", false, "Annotate pods")
 	flag.Parse()
 
-	embeddings := []string{""}
-	url := ""
+	var embeddings []string
+	var url string
+
 	if podsOnly {
-		embeddings = []string{"#feffef", "#604010", "#00ff00", "#333333", "#aaaaaa", "#927a0c"}
 		url = "http://127.0.0.1:8011/api/v1/namespaces/embeddings/pods"
+		embeddings = []string{
+			"123.0,1.1,9.2,1.3,9.4",
+			"978.0,8.1,2.2,5.3,9.4",
+			"432.0,5.1,6.2,3.3,7.4",
+			"987.0,3.1,3.2,8.3,4.4",
+			"198.0,1.1,7.2,1.3,4.4",
+			"320.0,1.1,8.2,4.3,4.4"}
 	} else {
-		embeddings = []string{"#ffffff", "#000000"}
 		url = "http://127.0.0.1:8011/api/v1/nodes"
+		embeddings = []string{
+			"678.0,3.1,3.2,0.3,1.4",
+			"311.0,1.1,9.2,0.3,6.4"}
 	}
 
 	resp, err := http.Get(url)
@@ -47,6 +57,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	if resp.StatusCode != 200 {
 		fmt.Println("Invalid status code", resp.Status)
 		os.Exit(1)
